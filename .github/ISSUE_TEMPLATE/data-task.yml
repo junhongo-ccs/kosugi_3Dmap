@@ -1,0 +1,60 @@
+name: GIS Data Task
+description: 無料GISデータの取得・加工・出典整理タスク
+title: "[Data] "
+labels:
+  - data
+  - gis
+body:
+  - type: textarea
+    id: dataset
+    attributes:
+      label: Dataset
+      description: 対象データセットと出典を書いてください。
+      placeholder: 例：国土数値情報 洪水浸水想定区域 / 避難施設データ
+    validations:
+      required: true
+  - type: dropdown
+    id: purpose
+    attributes:
+      label: Purpose
+      description: このデータを何に使うか選んでください。
+      options:
+        - Walk spots
+        - Walk route
+        - Flood risk layer
+        - Shelter layer
+        - Boundary layer
+        - Elevation/reference
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: processing
+    attributes:
+      label: Processing Plan
+      description: データ加工方針を書いてください。
+      placeholder: |
+        - 武蔵小杉駅から半径約1.5kmで切り出す
+        - GeoJSONへ変換する
+        - 表示に必要な属性だけ残す
+    validations:
+      required: true
+  - type: textarea
+    id: attribution
+    attributes:
+      label: Attribution
+      description: 画面またはREADMEに表示する出典表記を書いてください。
+      placeholder: 例：出典：国土交通省 国土数値情報
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance Criteria
+      description: 完了条件を書いてください。
+      placeholder: |
+        - 対象範囲に切り出されたGeoJSONが用意されている
+        - READMEに出典が追記されている
+        - 地図上でレイヤー表示できる
+    validations:
+      required: true

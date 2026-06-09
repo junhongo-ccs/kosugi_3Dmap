@@ -1,0 +1,65 @@
+name: Feature
+description: 3D Maps PoCの機能追加タスク
+title: "[Feature] "
+labels:
+  - feature
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: 追加する機能の概要を書いてください。
+      placeholder: 例：武蔵小杉駅周辺のカメラプリセットを追加する
+    validations:
+      required: true
+  - type: dropdown
+    id: milestone-area
+    attributes:
+      label: Area
+      description: 関連する領域を選んでください。
+      options:
+        - MVP Map Shell
+        - GIS Layers
+        - Presentation Demo
+        - Deploy & Cost Guardrails
+        - Future Extension
+    validations:
+      required: true
+  - type: textarea
+    id: requirements
+    attributes:
+      label: Requirements
+      description: 機能要件を箇条書きで書いてください。
+      placeholder: |
+        - 駅俯瞰ビューに移動できる
+        - 多摩川方向ビューに移動できる
+        - 現在選択中のプリセットがUIで分かる
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance Criteria
+      description: 完了条件を書いてください。
+      placeholder: |
+        - ボタンを押すと3D地図のカメラが指定位置へ移動する
+        - APIキー未設定時でも画面がクラッシュしない
+    validations:
+      required: true
+  - type: textarea
+    id: references
+    attributes:
+      label: References
+      description: 参考にする公式ドキュメント、Google Maps GitHubサンプル、関連Issueを書いてください。
+      placeholder: |
+        - https://github.com/googlemaps-samples/js-api-samples
+        - https://github.com/googlemaps/js-api-loader
+    validations:
+      required: false
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes
+      description: 実装メモ、制約、未決事項などがあれば書いてください。
+    validations:
+      required: false
