@@ -110,6 +110,13 @@ MVPでは、GISデータ加工の初期ボトルネックを避けるため、�
 C:\Program Files\QGIS 3.44.9\bin\ogr2ogr.exe
 ```
 
+QGIS/OSGeo4Wの起動ショートカット:
+
+```txt
+C:\Users\Public\Desktop\QGIS 3.44.9\QGIS Desktop 3.44.9.lnk
+C:\Users\Public\Desktop\QGIS 3.44.9\OSGeo4W Shell.lnk
+```
+
 PowerShell実行例:
 
 ```powershell
