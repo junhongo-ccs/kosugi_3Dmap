@@ -9,7 +9,7 @@
 - 対象エリア: 武蔵小杉駅から半径約1.5km
 - 主な体験: 3D地図上でスポット、回遊ルート、防災レイヤーを切り替えながら確認する
 - デモ対象: 社内PoC、自治体/不動産/観光向け提案、GIS活用検証
-- デプロイ想定: Railway
+- デプロイ想定: Render
 - フロントエンド: Next.js + TypeScript + Tailwind CSS
 
 ## Why Musashi-Kosugi
@@ -97,7 +97,7 @@ MVPでは無料GISデータと手動seedデータを中心に使います。Goog
 ## Non-Functional Requirements
 
 - Tailwind CSSでUIを構築する
-- Railway環境変数でGoogle Maps APIキーを管理する
+- Render環境変数でGoogle Maps APIキーを管理する
 - 大きなGISデータはそのまま読み込まず、対象範囲に切り出したGeoJSONを使う
 - 初期MVPではPostGISやMVT配信は使わない
 - PC表示を優先し、モバイルでは地図優先・詳細パネルは下部ドロワーにする
@@ -131,11 +131,11 @@ MVPで必ず設定するもの:
 - Google Cloud Billingの予算アラート
 - APIキーのHTTPリファラー制限
 - 3D Maps関連APIのクォータ上限
-- Railwayの環境変数管理
+- Renderの環境変数管理
 
 MVPではGoogle Places APIを使わないため、課金対象を主に3D Maps関連に絞ります。
 
-## Railway Deployment
+## Render Deployment
 
 想定環境変数:
 
@@ -149,11 +149,34 @@ NEXT_PUBLIC_APP_DEFAULT_RANGE_KM=1.5
 想定デプロイ手順:
 
 ```txt
-1. GitHub repositoryをRailwayに接続
+1. GitHub repositoryをRenderに接続
 2. 環境変数を設定
-3. Build command / Start commandはNext.js標準設定を利用
-4. 公開URLをGoogle Maps APIキーのHTTPリファラーに追加
-5. 予算アラートとクォータ上限を確認
+3. MVPはStatic Siteとして作成する
+4. API Routes/SSRが必要になったらWeb Serviceへ切り替える
+5. Build command / Publish directoryはNext.jsの構成に合わせて設定する
+6. 公開URLをGoogle Maps APIキーのHTTPリファラーに追加
+7. 予算アラートとクォータ上限を確認
+```
+
+Render設定の初期方針:
+
+```txt
+Service type: Static Site
+Repository: junhongo-ccs/kosugi_3Dmap
+Branch: main
+Build command: npm install && npm run build
+Publish directory: out
+Auto-deploy: On
+```
+
+Next.js側はStatic Exportを前提にし、サーバー依存の機能をMVPでは避けます。
+
+参考:
+
+```txt
+https://render.com/docs/deploy-nextjs-app
+https://render.com/docs/static-sites
+https://render.com/docs/configure-environment-variables
 ```
 
 ## Milestones
@@ -183,7 +206,7 @@ NEXT_PUBLIC_APP_DEFAULT_RANGE_KM=1.5
 
 ### 4. Deploy & Cost Guardrails
 
-- Railwayデプロイ
+- Renderデプロイ
 - Google Cloudの予算アラート
 - APIキー制限
 - READMEの公開用整備
@@ -194,7 +217,7 @@ NEXT_PUBLIC_APP_DEFAULT_RANGE_KM=1.5
 - 回遊スポット、回遊ルート、浸水想定、避難所レイヤーを切り替えられる
 - スポットクリックで詳細パネルが更新される
 - プレゼンモードでデモシナリオを一通り見せられる
-- Railway公開URLで同じ体験ができる
+- Render公開URLで同じ体験ができる
 - READMEだけで目的、起動方法、データ出典、料金リスクが理解できる
 
 ## Future Extensions
