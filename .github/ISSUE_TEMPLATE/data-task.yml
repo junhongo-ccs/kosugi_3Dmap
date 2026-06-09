@@ -34,9 +34,31 @@ body:
       label: Processing Plan
       description: データ加工方針を書いてください。
       placeholder: |
-        - 武蔵小杉駅から半径約1.5kmで切り出す
-        - GeoJSONへ変換する
+        - ogr2ogrでGeoJSONへ変換する
+        - Turf.jsで武蔵小杉駅から半径約1.5kmに切り出す
+        - QGISで属性と境界を目視確認する
         - 表示に必要な属性だけ残す
+    validations:
+      required: true
+  - type: textarea
+    id: tooling
+    attributes:
+      label: Tools
+      description: 使用する加工・確認ツールを書いてください。
+      placeholder: |
+        - ogr2ogr
+        - Turf.js
+        - QGIS
+    validations:
+      required: true
+  - type: textarea
+    id: area
+    attributes:
+      label: Target Area
+      description: 切り出し範囲を書いてください。
+      placeholder: |
+        - 武蔵小杉駅から半径約1.5kmで切り出す
+        - 中心座標はREADMEの環境変数に合わせる
     validations:
       required: true
   - type: textarea
