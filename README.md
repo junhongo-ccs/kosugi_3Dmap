@@ -96,12 +96,25 @@ MVPでは無料GISデータと手動seedデータを中心に使います。Goog
 
 MVPでは、GISデータ加工の初期ボトルネックを避けるため、以下の手順に固定します。
 
-- 原則として `ogr2ogr` で元データをGeoJSONへ変換する
+- ローカルPCのQGIS 3.44.9 / OSGeo4W Shellを加工環境として使う
+- QGIS同梱のGDAL 3.12.3を利用し、原則として `ogr2ogr` で元データをGeoJSONへ変換する
 - 武蔵小杉駅中心、半径約1.5kmの切り出しは `Turf.js` のbuffer/intersectで行う
 - QGISは目視確認、属性確認、境界の妥当性チェックに使う
 - 表示用GeoJSONには、地図表示と詳細パネルに必要な属性だけ残す
 - MVPデータは `public/data/` 配下に静的ファイルとして配置する
 - 大きなデータ、複雑なポリゴン、頻繁な更新が必要になった場合のみ、後続でPostGISまたはMVT配信を検討する
+
+ローカルで確認済みのGDAL実行パス:
+
+```txt
+C:\Program Files\QGIS 3.44.9\bin\ogr2ogr.exe
+```
+
+PowerShell実行例:
+
+```powershell
+& "C:\Program Files\QGIS 3.44.9\bin\ogr2ogr.exe" --version
+```
 
 ## Non-Functional Requirements
 

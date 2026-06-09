@@ -46,9 +46,10 @@ body:
       label: Tools
       description: 使用する加工・確認ツールを書いてください。
       placeholder: |
-        - ogr2ogr
+        - QGIS Desktop 3.44.9
+        - OSGeo4W Shell
+        - GDAL/ogr2ogr 3.12.3
         - Turf.js
-        - QGIS
     validations:
       required: true
   - type: textarea
