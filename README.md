@@ -220,6 +220,32 @@ https://render.com/docs/static-sites
 https://render.com/docs/configure-environment-variables
 ```
 
+## GitHub Spec Kit
+
+このリポジトリは **GitHub Spec Kit** を `copilot` 連携・`PowerShell` スクリプト構成で初期化済みです。
+
+- 主要生成物
+  - `.specify/` : Spec Kit本体設定、テンプレート、ワークフロー、PowerShellスクリプト
+  - `.github/prompts/` : Copilot用の `/speckit.*` プロンプト
+  - `.github/agents/` : Spec Kitエージェント定義
+  - `.github/copilot-instructions.md` : Copilot向け追加コンテキスト
+
+Copilot で使う主なコマンド:
+
+1. `/speckit.constitution` - 開発原則を定義する
+2. `/speckit.specify` - 要件仕様を作る
+3. `/speckit.plan` - 技術実装計画を作る
+4. `/speckit.tasks` - 実行タスクへ分解する
+5. `/speckit.implement` - タスクに沿って実装する
+
+補助コマンド:
+
+1. `/speckit.clarify` - 曖昧な要件を整理する
+2. `/speckit.checklist` - 要件品質の確認項目を作る
+3. `/speckit.analyze` - 仕様、計画、タスクの整合を確認する
+
+このプロジェクトでは、READMEのPoC方針を元に **constitution → specify → plan → tasks** の順で進める想定です。
+
 ## Milestones
 
 ### 1. MVP Map Shell
