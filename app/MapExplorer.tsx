@@ -1,253 +1,55 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-
-type LatLngAltitude = {
-  lat: number;
-  lng: number;
-  altitude?: number;
-};
-
-type CameraPreset = {
-  id: string;
-  label: string;
-  center: LatLngAltitude;
-  range: number;
-  tilt: number;
-  heading: number;
-};
-
-type Spot = {
-  id: string;
-  name: string;
-  category: string;
-  description: string;
-  source: string;
-  memo: string;
-  position: LatLngAltitude;
-};
-
-type LayerKey = "spots" | "route" | "flood" | "shelters" | "boundary";
-
-type Map3DElementLike = HTMLElement & {
-  center: LatLngAltitude;
-  range: number;
-  tilt: number;
-  heading: number;
-  mode: string;
-  flyCameraTo?: (options: {
-    endCamera: Pick<CameraPreset, "center" | "range" | "tilt" | "heading">;
-    durationMillis?: number;
-  }) => void;
-};
-
-type Maps3DLibrary = {
-  Map3DElement: new (options: Record<string, unknown>) => Map3DElementLike;
-  Marker3DElement: new (options: Record<string, unknown>) => HTMLElement;
-  Polyline3DElement: new (options: Record<string, unknown>) => HTMLElement;
-  Polygon3DElement: new (options: Record<string, unknown>) => HTMLElement;
-};
-
-type GoogleMapsNamespace = {
-  importLibrary: (library: string) => Promise<unknown>;
-};
-
-declare global {
-  interface Window {
-    google?: {
-      maps?: GoogleMapsNamespace;
-    };
-    __kosugiMapsLoaded?: () => void;
-  }
-}
+import ExplorerPanel from "./ExplorerPanel";
+import SpotDetailModal from "./SpotDetailModal";
+import { loadGoogleMaps } from "./googleMapsLoader";
+import { cameraPresets, floodArea, routePath, shelters, walkSpots } from "./mapData";
+import type {
+  CameraPreset,
+  LayerKey,
+  Map3DElementLike,
+  Maps3DLibrary,
+  MarkerLibrary,
+  PinElementLike,
+  Spot,
+} from "./mapTypes";
 
 const keyName = "NEXT_PUBLIC_GOOGLE_MAPS_API_KEY";
-const scriptId = "google-maps-js-api";
-
-const cameraPresets: CameraPreset[] = [
-  {
-    id: "station",
-    label: "駅俯瞰",
-    center: { lat: 35.5761, lng: 139.6566, altitude: 120 },
-    range: 1900,
-    tilt: 57,
-    heading: 35,
-  },
-  {
-    id: "tamagawa",
-    label: "多摩川方向",
-    center: { lat: 35.5868, lng: 139.6674, altitude: 90 },
-    range: 2400,
-    tilt: 62,
-    heading: 330,
-  },
-  {
-    id: "walk",
-    label: "街歩き視点",
-    center: { lat: 35.5754, lng: 139.6598, altitude: 35 },
-    range: 620,
-    tilt: 72,
-    heading: 92,
-  },
-  {
-    id: "safety",
-    label: "防災説明視点",
-    center: { lat: 35.5837, lng: 139.6618, altitude: 110 },
-    range: 2100,
-    tilt: 64,
-    heading: 18,
-  },
-];
 
 const layerLabels: Record<LayerKey, string> = {
   spots: "回遊スポット",
-  route: "回遊ルート",
+  route: "仮回遊ルート",
   flood: "浸水想定",
-  shelters: "避難所",
-  boundary: "行政/町丁目境界",
+  shelters: "指定避難所",
 };
 
 const layerDefaults: Record<LayerKey, boolean> = {
   spots: true,
-  route: true,
+  route: false,
   flood: true,
   shelters: true,
-  boundary: false,
 };
 
-const walkSpots: Spot[] = [
-  {
-    id: "station",
-    name: "武蔵小杉駅",
-    category: "交通結節点",
-    description: "JR線と東急線が交差する回遊の起点。",
-    source: "Manual seed data",
-    memo: "駅俯瞰プリセットの中心。",
-    position: { lat: 35.5761, lng: 139.6566, altitude: 30 },
+const markerStyles = {
+  spot: {
+    background: "#007c89",
+    borderColor: "#e6fffb",
+    glyphColor: "#ffffff",
+    glyphText: "S",
+    scale: 1.05,
   },
-  {
-    id: "grand-tree",
-    name: "グランツリー武蔵小杉",
-    category: "商業施設",
-    description: "駅東側の主要な滞在スポット。",
-    source: "Manual seed data",
-    memo: "街歩きルートの序盤に置くと説明しやすい。",
-    position: { lat: 35.5735, lng: 139.6606, altitude: 30 },
+  shelter: {
+    background: "#d92d20",
+    borderColor: "#fff1f0",
+    glyphColor: "#ffffff",
+    glyphText: "避",
+    scale: 1.12,
   },
-  {
-    id: "kosugi-core",
-    name: "こすぎコアパーク",
-    category: "広場",
-    description: "駅周辺イベントや待ち合わせに使われる公開空間。",
-    source: "Manual seed data",
-    memo: "駅前滞留と導線を説明する地点。",
-    position: { lat: 35.5773, lng: 139.6592, altitude: 25 },
-  },
-  {
-    id: "todoroki",
-    name: "等々力緑地方面",
-    category: "公園・広域避難候補",
-    description: "北側の広い緑地空間へ向かう防災文脈の参照点。",
-    source: "Manual seed data",
-    memo: "実データ投入時に避難場所属性を確認する。",
-    position: { lat: 35.5869, lng: 139.6504, altitude: 35 },
-  },
-  {
-    id: "tamagawa",
-    name: "多摩川沿い",
-    category: "河川空間",
-    description: "浸水想定と親水空間を同時に説明しやすい地点。",
-    source: "Manual seed data",
-    memo: "防災説明視点と組み合わせる。",
-    position: { lat: 35.5901, lng: 139.666, altitude: 35 },
-  },
-];
+};
 
-const shelters: Spot[] = [
-  {
-    id: "nakahara-civic",
-    name: "中原市民館周辺",
-    category: "避難所候補",
-    description: "公共施設レイヤー投入前の候補地点。",
-    source: "Manual seed data",
-    memo: "国土数値情報/自治体データで後続確認する。",
-    position: { lat: 35.5769, lng: 139.6551, altitude: 35 },
-  },
-  {
-    id: "school-north",
-    name: "駅北側学校施設周辺",
-    category: "避難所候補",
-    description: "避難施設データ取り込み時の差し替え対象。",
-    source: "Manual seed data",
-    memo: "正式名称と種別は実データで確定する。",
-    position: { lat: 35.582, lng: 139.6578, altitude: 35 },
-  },
-];
-
-const routePath: LatLngAltitude[] = [
-  { lat: 35.5761, lng: 139.6566, altitude: 18 },
-  { lat: 35.5773, lng: 139.6592, altitude: 18 },
-  { lat: 35.5735, lng: 139.6606, altitude: 18 },
-  { lat: 35.5782, lng: 139.6637, altitude: 18 },
-  { lat: 35.5901, lng: 139.666, altitude: 18 },
-];
-
-const floodArea: LatLngAltitude[] = [
-  { lat: 35.5812, lng: 139.6508, altitude: 8 },
-  { lat: 35.5924, lng: 139.6564, altitude: 8 },
-  { lat: 35.594, lng: 139.6708, altitude: 8 },
-  { lat: 35.5855, lng: 139.6729, altitude: 8 },
-  { lat: 35.579, lng: 139.6638, altitude: 8 },
-];
-
-const boundaryArea: LatLngAltitude[] = [
-  { lat: 35.5655, lng: 139.6477, altitude: 10 },
-  { lat: 35.5889, lng: 139.6477, altitude: 10 },
-  { lat: 35.592, lng: 139.6723, altitude: 10 },
-  { lat: 35.5672, lng: 139.6741, altitude: 10 },
-];
-
-function loadGoogleMaps(apiKey: string) {
-  if (window.google?.maps?.importLibrary) {
-    return Promise.resolve(window.google.maps);
-  }
-
-  return new Promise<GoogleMapsNamespace>((resolve, reject) => {
-    const existingScript = document.getElementById(scriptId) as HTMLScriptElement | null;
-
-    window.__kosugiMapsLoaded = () => {
-      if (window.google?.maps) {
-        resolve(window.google.maps);
-      } else {
-        reject(new Error("Google Maps namespace was not initialized."));
-      }
-    };
-
-    if (existingScript) {
-      return;
-    }
-
-    const script = document.createElement("script");
-    const params = new URLSearchParams({
-      key: apiKey,
-      v: "beta",
-      language: "ja",
-      region: "JP",
-      loading: "async",
-      callback: "__kosugiMapsLoaded",
-    });
-
-    script.id = scriptId;
-    script.src = `https://maps.googleapis.com/maps/api/js?${params.toString()}`;
-    script.async = true;
-    script.defer = true;
-    script.onerror = (event) => {
-      const eventType = event instanceof Event ? event.type : "error";
-      reject(new Error(`Google Maps JavaScript API failed to load. (${eventType})`));
-    };
-
-    document.head.append(script);
-  });
+function appendMarkerPin(marker: HTMLElement, pin: PinElementLike) {
+  marker.append(pin.element ?? pin);
 }
 
 function formatError(error: unknown, fallback: string) {
@@ -289,6 +91,17 @@ function flyTo(map: Map3DElementLike | null, preset: CameraPreset, durationMilli
   map.heading = preset.heading;
 }
 
+function flyToSpot(map: Map3DElementLike | null, spot: Spot) {
+  flyTo(map, {
+    id: spot.id,
+    label: spot.name,
+    center: { ...spot.position, altitude: Math.max(spot.position.altitude ?? 30, 70) },
+    range: spot.id === "tamagawa" || spot.id === "todoroki" ? 1300 : 650,
+    tilt: 68,
+    heading: spot.id === "tamagawa" ? 325 : 45,
+  });
+}
+
 function applyLayerVisibility(
   map: Map3DElementLike | null,
   currentLayers: Record<LayerKey, boolean>,
@@ -320,7 +133,6 @@ export default function MapExplorer({ apiKey }: { apiKey?: string }) {
   const mapRef = useRef<Map3DElementLike | null>(null);
   const elementRefs = useRef<Partial<Record<LayerKey, HTMLElement[]>>>({});
   const layersRef = useRef<Record<LayerKey, boolean>>(layerDefaults);
-  const presentationTimers = useRef<number[]>([]);
 
   const [loadState, setLoadState] = useState<"idle" | "loading" | "ready" | "error">(
     apiKey ? "loading" : "idle",
@@ -328,9 +140,8 @@ export default function MapExplorer({ apiKey }: { apiKey?: string }) {
   const [loadError, setLoadError] = useState("");
   const [activePreset, setActivePreset] = useState(cameraPresets[0].id);
   const [activeSpot, setActiveSpot] = useState<Spot>(walkSpots[0]);
+  const [detailSpot, setDetailSpot] = useState<Spot | null>(null);
   const [layers, setLayers] = useState<Record<LayerKey, boolean>>(layerDefaults);
-  const [presentationStep, setPresentationStep] = useState(0);
-  const [isPresenting, setIsPresenting] = useState(false);
 
   const allLayerEntries = useMemo(
     () => Object.entries(layerLabels) as Array<[LayerKey, string]>,
@@ -375,6 +186,7 @@ export default function MapExplorer({ apiKey }: { apiKey?: string }) {
           Polyline3DElement,
           Polygon3DElement,
         } = (await googleMaps.importLibrary("maps3d")) as Maps3DLibrary;
+        const { PinElement } = (await googleMaps.importLibrary("marker")) as MarkerLibrary;
 
         if (cancelled || !mapHostRef.current) {
           return;
@@ -401,7 +213,11 @@ export default function MapExplorer({ apiKey }: { apiKey?: string }) {
             altitudeMode: "RELATIVE_TO_GROUND",
           });
           marker.classList.add("map-marker");
-          marker.addEventListener("click", () => setActiveSpot(spot));
+          appendMarkerPin(marker, new PinElement(markerStyles.spot));
+          marker.addEventListener("click", () => {
+            setActiveSpot(spot);
+            setDetailSpot(spot);
+          });
           createdMap?.append(marker);
           return marker;
         });
@@ -414,7 +230,11 @@ export default function MapExplorer({ apiKey }: { apiKey?: string }) {
             altitudeMode: "RELATIVE_TO_GROUND",
           });
           marker.classList.add("map-marker", "map-marker-shelter");
-          marker.addEventListener("click", () => setActiveSpot(spot));
+          appendMarkerPin(marker, new PinElement(markerStyles.shelter));
+          marker.addEventListener("click", () => {
+            setActiveSpot(spot);
+            setDetailSpot(spot);
+          });
           createdMap?.append(marker);
           return marker;
         });
@@ -440,22 +260,11 @@ export default function MapExplorer({ apiKey }: { apiKey?: string }) {
         });
         createdMap.append(flood);
 
-        const boundary = new Polygon3DElement({
-          path: boundaryArea,
-          fillColor: "rgba(255, 255, 255, 0.04)",
-          strokeColor: "#475569",
-          strokeWidth: 2,
-          drawsOccludedSegments: true,
-          altitudeMode: "RELATIVE_TO_GROUND",
-        });
-        createdMap.append(boundary);
-
         const layerElements = {
           spots: spotMarkers,
           shelters: shelterMarkers,
           route: [route],
           flood: [flood],
-          boundary: [boundary],
         };
         elementRefs.current = layerElements;
         applyLayerVisibility(createdMap, layersRef.current, layerElements);
@@ -472,11 +281,8 @@ export default function MapExplorer({ apiKey }: { apiKey?: string }) {
     }
 
     initMap();
-    const activeTimers = presentationTimers.current;
-
     return () => {
       cancelled = true;
-      activeTimers.forEach((timer) => window.clearTimeout(timer));
       if (createdMap) {
         createdMap.remove();
       }
@@ -490,41 +296,19 @@ export default function MapExplorer({ apiKey }: { apiKey?: string }) {
 
   function selectPreset(preset: CameraPreset) {
     setActivePreset(preset.id);
-    setIsPresenting(false);
-    setPresentationStep(0);
-    presentationTimers.current.forEach((timer) => window.clearTimeout(timer));
+    mapRef.current?.stopCameraAnimation?.();
     flyTo(mapRef.current, preset);
   }
 
   function toggleLayer(key: LayerKey) {
-    setLayers((current) => ({ ...current, [key]: !current[key] }));
+    setLayers((current) => ({ ...layerDefaults, ...current, [key]: !Boolean(current[key]) }));
   }
 
-  function startPresentation() {
-    const steps = [cameraPresets[0], cameraPresets[2], cameraPresets[3]];
-
-    presentationTimers.current.forEach((timer) => window.clearTimeout(timer));
-    setIsPresenting(true);
-
-    steps.forEach((preset, index) => {
-      const timer = window.setTimeout(() => {
-        setPresentationStep(index + 1);
-        setActivePreset(preset.id);
-        flyTo(mapRef.current, preset, index === 0 ? 800 : 1800);
-
-        if (index === 1) {
-          setLayers((current) => ({ ...current, spots: true, route: true }));
-          setActiveSpot(walkSpots[1]);
-        }
-
-        if (index === 2) {
-          setLayers((current) => ({ ...current, flood: true, shelters: true }));
-          setActiveSpot(walkSpots[4]);
-          setIsPresenting(false);
-        }
-      }, index * 2600);
-      presentationTimers.current.push(timer);
-    });
+  function selectSpot(spot: Spot) {
+    setActiveSpot(spot);
+    mapRef.current?.stopCameraAnimation?.();
+    setLayers((current) => ({ ...current, spots: true }));
+    flyToSpot(mapRef.current, spot);
   }
 
   return (
@@ -545,9 +329,6 @@ export default function MapExplorer({ apiKey }: { apiKey?: string }) {
               {preset.label}
             </button>
           ))}
-          <button className="btn btn-primary" type="button" onClick={startPresentation}>
-            {isPresenting ? `ステップ ${presentationStep}/3` : "プレゼンモード開始"}
-          </button>
         </div>
       </header>
 
@@ -580,51 +361,18 @@ export default function MapExplorer({ apiKey }: { apiKey?: string }) {
           )}
         </article>
 
-        <aside className="panel" aria-label="layer controls and detail panel">
-          <section className="panel-section">
-            <h2>Layer Controls</h2>
-            <p className="panel-note">Google標準の地名・店舗アイコンはベースマップ表示です。</p>
-            <div className="group">
-              {allLayerEntries.map(([key, label]) => (
-                <label className="row" key={key}>
-                  <span>{label}</span>
-                  <input
-                    type="checkbox"
-                    checked={layers[key]}
-                    onChange={() => toggleLayer(key)}
-                  />
-                </label>
-              ))}
-            </div>
-          </section>
-
-          <section className="panel-section">
-            <h2>表示情報</h2>
-            <div className="detail">
-              <p className="detail-kind">{activeSpot.category}</p>
-              <h3>{activeSpot.name}</h3>
-              <p>{activeSpot.description}</p>
-            </div>
-            <div className="group compact">
-              <p className="row">
-                <span>浸水想定</span>
-                <strong>{activeSpot.id === "tamagawa" ? "要確認" : "未判定"}</strong>
-              </p>
-              <p className="row">
-                <span>最寄り避難所候補</span>
-                <strong>{shelters[0].name}</strong>
-              </p>
-              <p className="row">
-                <span>出典</span>
-                <strong>{activeSpot.source}</strong>
-              </p>
-            </div>
-            <p className="memo">{activeSpot.memo}</p>
-          </section>
-
-          <small>出典表示エリア: 国土数値情報 / OSM / Manual seed data</small>
-        </aside>
+        <ExplorerPanel
+          layerEntries={allLayerEntries}
+          layers={layers}
+          activeSpot={activeSpot}
+          spots={walkSpots}
+          onToggleLayer={toggleLayer}
+          onSelectSpot={selectSpot}
+          onOpenSpotDetail={setDetailSpot}
+        />
       </section>
+
+      <SpotDetailModal spot={detailSpot} onClose={() => setDetailSpot(null)} />
     </main>
   );
 }

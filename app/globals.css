@@ -11,6 +11,7 @@
   --accent-soft: #d8f0f1;
   --route: #f97316;
   --warn: #b42318;
+  --topbar-height: 100px;
 }
 
 * {
@@ -41,6 +42,9 @@ input {
 }
 
 .topbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
   display: flex;
   flex-wrap: wrap;
   gap: 0.8rem;
@@ -48,7 +52,7 @@ input {
   align-items: center;
   padding: 0.8rem 1rem;
   border-bottom: 1px solid var(--line);
-  background: color-mix(in srgb, var(--panel) 92%, transparent);
+  background: color-mix(in srgb, var(--panel) 97%, transparent);
 }
 
 .eyebrow {
@@ -106,6 +110,7 @@ input {
   gap: 0.75rem;
   grid-template-columns: 1fr;
   padding: 0.75rem;
+  min-height: 0;
 }
 
 .map-area {
@@ -113,7 +118,8 @@ input {
   overflow: hidden;
   border: 1px solid var(--line);
   border-radius: 8px;
-  min-height: 60dvh;
+  height: 58dvh;
+  min-height: 360px;
   background:
     linear-gradient(140deg, rgba(0, 109, 119, 0.2), rgba(249, 115, 22, 0.12)),
     #dbe6e9;
@@ -123,7 +129,6 @@ input {
 .map-3d {
   width: 100%;
   height: 100%;
-  min-height: 60dvh;
   display: block;
 }
 
@@ -161,7 +166,9 @@ input {
   border: 1px solid var(--line);
   border-radius: 8px;
   background: var(--panel);
-  padding: 0.9rem;
+  padding: 0.8rem;
+  min-height: 0;
+  overflow: auto;
 }
 
 .panel-section + .panel-section {
@@ -171,7 +178,7 @@ input {
 }
 
 .panel h2 {
-  margin: 0 0 0.55rem;
+  margin: 0 0 0.45rem;
   font-size: 0.95rem;
 }
 
@@ -181,8 +188,71 @@ input {
   margin-bottom: 0.85rem;
 }
 
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.75rem;
+  margin: 0 0 0.6rem;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.legend-dot {
+  width: 0.72rem;
+  height: 0.72rem;
+  border-radius: 999px;
+  border: 1px solid #fff;
+  box-shadow: 0 0 0 1px var(--line);
+}
+
+.legend-spot {
+  background: #007c89;
+}
+
+.legend-shelter {
+  background: #d92d20;
+}
+
 .compact {
   margin-top: 0.75rem;
+}
+
+.spot-list {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.spot-card {
+  display: grid;
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0.5rem 0.65rem;
+  background: #fff;
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+}
+
+.spot-card:hover {
+  border-color: var(--accent);
+}
+
+.spot-card-active {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.spot-card span {
+  font-size: 0.88rem;
+  font-weight: 800;
+  line-height: 1.25;
 }
 
 .row {
@@ -198,6 +268,10 @@ input {
 .row strong {
   color: var(--ink);
   text-align: right;
+}
+
+.row strong.flood-warn {
+  color: var(--warn);
 }
 
 .row input {
@@ -230,6 +304,79 @@ input {
   line-height: 1.6;
 }
 
+.note-block {
+  margin-top: 0.75rem;
+  padding: 0.65rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #f8fafb;
+}
+
+.note-block h3 {
+  margin: 0 0 0.3rem;
+  font-size: 0.78rem;
+  color: var(--accent-strong);
+}
+
+.note-block p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.84rem;
+  line-height: 1.6;
+}
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgba(15, 23, 42, 0.28);
+}
+
+.spot-modal {
+  position: relative;
+  width: min(92vw, 520px);
+  max-height: min(82dvh, 720px);
+  overflow: auto;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+  padding: 1rem;
+  box-shadow: 0 22px 60px rgba(15, 23, 42, 0.24);
+}
+
+.modal-close {
+  position: absolute;
+  top: 0.65rem;
+  right: 0.65rem;
+  width: 2rem;
+  height: 2rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--ink);
+  cursor: pointer;
+  font-size: 1.15rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.modal-close:hover {
+  border-color: var(--accent);
+  color: var(--accent-strong);
+}
+
+.spot-modal .detail {
+  padding-right: 2.25rem;
+}
+
+.spot-modal .detail h2 {
+  margin: 0 0 0.45rem;
+  font-size: 1.08rem;
+}
+
 .memo,
 small {
   color: var(--muted);
@@ -245,12 +392,18 @@ small {
   .main {
     grid-template-columns: minmax(0, 1fr) 340px;
     padding: 1rem;
+    height: calc(100dvh - var(--topbar-height));
   }
 
   .map-area,
   .map-host,
   .map-3d {
-    min-height: calc(100dvh - 106px);
+    height: 100%;
+    min-height: 0;
+  }
+
+  .panel {
+    max-height: 100%;
   }
 }
 
