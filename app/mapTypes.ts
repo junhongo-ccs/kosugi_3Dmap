@@ -21,6 +21,16 @@ export type Spot = {
   walkMemo: string;
   safetyMemo: string;
   floodStatus: string;
+  floodRisk?: {
+    scenario: string;
+    depthRank: string;
+    depthRankCode: number;
+    depthMinCm: number | null;
+    depthMaxCm: number | null;
+    label: string;
+    source: string;
+    sourceYear: string;
+  };
   nearestShelter: string;
   source: string;
   position: LatLngAltitude;
@@ -34,6 +44,42 @@ export type MapDataset = {
   shelters: Spot[];
   routePath: LatLngAltitude[];
   floodArea: LatLngAltitude[];
+};
+
+export type FloodRiskProperties = {
+  river: string;
+  scenario: string;
+  depth_rank: string;
+  depth_rank_code: number;
+  depth_min_m: number | null;
+  depth_max_m: number | null;
+  source: string;
+  source_year: string;
+  river_code: string;
+  administrator: string;
+};
+
+export type GeoJsonPosition = [number, number] | [number, number, number];
+export type GeoJsonPolygonCoordinates = GeoJsonPosition[][];
+export type GeoJsonMultiPolygonCoordinates = GeoJsonPosition[][][];
+
+export type FloodRiskFeature = {
+  type: "Feature";
+  properties: FloodRiskProperties;
+  geometry:
+    | {
+        type: "Polygon";
+        coordinates: GeoJsonPolygonCoordinates;
+      }
+    | {
+        type: "MultiPolygon";
+        coordinates: GeoJsonMultiPolygonCoordinates;
+      };
+};
+
+export type FloodRiskFeatureCollection = {
+  type: "FeatureCollection";
+  features: FloodRiskFeature[];
 };
 
 export type CameraState = Pick<CameraPreset, "center" | "range" | "tilt" | "heading">;

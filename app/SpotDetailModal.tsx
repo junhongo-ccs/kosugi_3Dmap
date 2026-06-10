@@ -10,6 +10,14 @@ export default function SpotDetailModal({ spot, onClose }: SpotDetailModalProps)
     return null;
   }
 
+  const isFloodRiskArea = spot.floodStatus === "浸水想定区域内";
+  const floodRiskLabel = spot.floodRisk
+    ? `最大 ${spot.floodRisk.label}`
+    : spot.floodStatus;
+  const floodRiskSource = spot.floodRisk
+    ? `${spot.floodRisk.source} ${spot.floodRisk.sourceYear} / ${spot.floodRisk.scenario}`
+    : null;
+
   return (
     <div className="modal-backdrop" role="presentation" onClick={onClose}>
       <section
@@ -37,9 +45,9 @@ export default function SpotDetailModal({ spot, onClose }: SpotDetailModalProps)
         </div>
         <div className="group compact">
           <p className="row">
-            <span>{spot.floodStatus === "浸水想定区域内" ? "⚠ 浸水想定" : "浸水想定"}</span>
-            <strong className={spot.floodStatus === "浸水想定区域内" ? "flood-warn" : undefined}>
-              {spot.floodStatus}
+            <span>{isFloodRiskArea ? "⚠ 浸水想定" : "浸水想定"}</span>
+            <strong className={isFloodRiskArea ? "flood-warn" : undefined}>
+              {floodRiskLabel}
             </strong>
           </p>
           <p className="row">
@@ -47,7 +55,8 @@ export default function SpotDetailModal({ spot, onClose }: SpotDetailModalProps)
             <strong>{spot.nearestShelter}</strong>
           </p>
         </div>
-        <p className="memo">出典: {spot.source}</p>
+        {floodRiskSource && <p className="memo">浸水想定: {floodRiskSource}</p>}
+        <p className="memo">スポット情報: {spot.source}</p>
       </section>
     </div>
   );

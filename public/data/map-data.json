@@ -3,7 +3,11 @@
     {
       "id": "station",
       "label": "JR/東急駅俯瞰",
-      "center": { "lat": 35.5761, "lng": 139.6566, "altitude": 120 },
+      "center": {
+        "lat": 35.5761,
+        "lng": 139.6566,
+        "altitude": 120
+      },
       "range": 1900,
       "tilt": 57,
       "heading": 35
@@ -11,7 +15,11 @@
     {
       "id": "tamagawa",
       "label": "多摩川方向",
-      "center": { "lat": 35.5868, "lng": 139.6674, "altitude": 90 },
+      "center": {
+        "lat": 35.5868,
+        "lng": 139.6674,
+        "altitude": 90
+      },
       "range": 2400,
       "tilt": 62,
       "heading": 330
@@ -19,18 +27,26 @@
     {
       "id": "walk",
       "label": "街歩き視点",
-      "center": { "lat": 35.5754, "lng": 139.6598, "altitude": 35 },
+      "center": {
+        "lat": 35.5754,
+        "lng": 139.6598,
+        "altitude": 35
+      },
       "range": 620,
       "tilt": 72,
       "heading": 92
     },
     {
       "id": "safety",
-      "label": "防災説明視点",
-      "center": { "lat": 35.5837, "lng": 139.6618, "altitude": 110 },
-      "range": 2100,
-      "tilt": 64,
-      "heading": 18
+      "label": "サッカー観戦",
+      "center": {
+        "lat": 35.58598,
+        "lng": 139.65276,
+        "altitude": 64
+      },
+      "range": 620,
+      "tilt": 71,
+      "heading": 42
     }
   ],
   "walkSpots": [
@@ -41,10 +57,24 @@
       "role": "JR南武線・横須賀線方面を含む交通結節点。",
       "walkMemo": "北口・新南改札側など出口ごとに街への出方が変わるため、東急駅とは分けて扱う。",
       "safetyMemo": "帰宅困難時の滞留や乗換混雑が起きやすい地点として、東急駅側との連絡動線も確認する。",
-      "floodStatus": "未判定",
+      "floodStatus": "浸水想定区域内",
       "nearestShelter": "小杉小学校",
       "source": "JR東日本駅情報 / Manual seed data",
-      "position": { "lat": 35.5761, "lng": 139.6566, "altitude": 30 }
+      "position": {
+        "lat": 35.5761,
+        "lng": 139.6566,
+        "altitude": 30
+      },
+      "floodRisk": {
+        "scenario": "想定最大規模",
+        "depthRank": "0.5m-3.0m",
+        "depthRankCode": 2,
+        "depthMinCm": 50,
+        "depthMaxCm": 300,
+        "label": "50〜300cm",
+        "source": "国土数値情報 洪水浸水想定区域データ（河川単位）",
+        "sourceYear": "2025"
+      }
     },
     {
       "id": "tokyu-station",
@@ -53,10 +83,24 @@
       "role": "東急東横線・目黒線の駅。商業施設や東口方面の回遊起点。",
       "walkMemo": "東急スクエア、ららテラス、グランツリー方面へ出る街歩き起点として扱う。",
       "safetyMemo": "JR駅との乗換・連絡通路の混雑を前提に、駅前滞留と避難方向を分けて確認する。",
-      "floodStatus": "未判定",
+      "floodStatus": "浸水想定区域内",
       "nearestShelter": "今井小学校",
       "source": "東急電鉄駅情報 / Manual seed data",
-      "position": { "lat": 35.5755, "lng": 139.6597, "altitude": 30 }
+      "position": {
+        "lat": 35.5755,
+        "lng": 139.6597,
+        "altitude": 30
+      },
+      "floodRisk": {
+        "scenario": "想定最大規模",
+        "depthRank": "0.5m-3.0m",
+        "depthRankCode": 2,
+        "depthMinCm": 50,
+        "depthMaxCm": 300,
+        "label": "50〜300cm",
+        "source": "国土数値情報 洪水浸水想定区域データ（河川単位）",
+        "sourceYear": "2025"
+      }
     },
     {
       "id": "grand-tree",
@@ -65,10 +109,24 @@
       "role": "駅東側の主要な滞在スポット。",
       "walkMemo": "買い物、飲食、休憩を挟めるため、回遊ルートの目的地として説明しやすい。",
       "safetyMemo": "来街者が多い施設なので、災害時は屋外広場や駅方面への移動可否を確認したい。",
-      "floodStatus": "要確認",
+      "floodStatus": "浸水想定区域内",
       "nearestShelter": "今井小学校",
       "source": "Manual seed data",
-      "position": { "lat": 35.5735, "lng": 139.6606, "altitude": 30 }
+      "position": {
+        "lat": 35.5735,
+        "lng": 139.6606,
+        "altitude": 30
+      },
+      "floodRisk": {
+        "scenario": "想定最大規模",
+        "depthRank": "0.5m-3.0m",
+        "depthRankCode": 2,
+        "depthMinCm": 50,
+        "depthMaxCm": 300,
+        "label": "50〜300cm",
+        "source": "国土数値情報 洪水浸水想定区域データ（河川単位）",
+        "sourceYear": "2025"
+      }
     },
     {
       "id": "kosugi-core",
@@ -77,10 +135,24 @@
       "role": "駅周辺イベントや待ち合わせに使われる公開空間。",
       "walkMemo": "駅前で人が滞留しやすく、商業施設やバス乗り場へのつなぎとして使える。",
       "safetyMemo": "一時集合や情報確認の候補になるが、正式な避難場所ではない前提で扱う。",
-      "floodStatus": "未判定",
+      "floodStatus": "浸水想定区域内",
       "nearestShelter": "小杉小学校",
       "source": "Manual seed data",
-      "position": { "lat": 35.5773, "lng": 139.6592, "altitude": 25 }
+      "position": {
+        "lat": 35.5773,
+        "lng": 139.6592,
+        "altitude": 25
+      },
+      "floodRisk": {
+        "scenario": "想定最大規模",
+        "depthRank": "0.5m-3.0m",
+        "depthRankCode": 2,
+        "depthMinCm": 50,
+        "depthMaxCm": 300,
+        "label": "50〜300cm",
+        "source": "国土数値情報 洪水浸水想定区域データ（河川単位）",
+        "sourceYear": "2025"
+      }
     },
     {
       "id": "todoroki",
@@ -89,22 +161,24 @@
       "role": "北側の広い緑地空間へ向かう防災文脈の参照点。",
       "walkMemo": "駅前の高密度な市街地から、緑地やスポーツ施設方面へ抜ける広域回遊の端点。",
       "safetyMemo": "広いオープンスペースだが、指定避難所とは別概念として扱い、周辺の指定避難所と分けて確認する。",
-      "floodStatus": "要確認",
+      "floodStatus": "浸水想定区域内",
       "nearestShelter": "中原中学校",
       "source": "Manual seed data",
-      "position": { "lat": 35.5869, "lng": 139.6504, "altitude": 35 }
-    },
-    {
-      "id": "tamagawa",
-      "name": "多摩川沿い",
-      "category": "河川空間",
-      "role": "浸水想定と親水空間を同時に説明しやすい地点。",
-      "walkMemo": "水辺の景観や散策の魅力を示せる一方、駅周辺から距離があるためルート設計が必要。",
-      "safetyMemo": "河川近接エリアとして、浸水想定、避難方向、橋や堤防の扱いを重点確認する。",
-      "floodStatus": "浸水想定区域内",
-      "nearestShelter": "上丸子小学校",
-      "source": "Manual seed data",
-      "position": { "lat": 35.5901, "lng": 139.666, "altitude": 35 }
+      "position": {
+        "lat": 35.5869,
+        "lng": 139.6504,
+        "altitude": 35
+      },
+      "floodRisk": {
+        "scenario": "想定最大規模",
+        "depthRank": "5.0m-10.0m",
+        "depthRankCode": 4,
+        "depthMinCm": 500,
+        "depthMaxCm": 1000,
+        "label": "500〜1000cm",
+        "source": "国土数値情報 洪水浸水想定区域データ（河川単位）",
+        "sourceYear": "2025"
+      }
     }
   ],
   "shelters": [
@@ -115,10 +189,24 @@
       "role": "川崎市の指定避難所一覧に掲載されている小杉町2丁目の避難所。",
       "walkMemo": "武蔵小杉駅北側の市街地と等々力緑地方面をつなぐ位置にある。",
       "safetyMemo": "災害時に一定期間避難生活を送る場所として示されている。開設状況は川崎市防災ポータルで確認する。",
-      "floodStatus": "未判定",
+      "floodStatus": "浸水想定区域内",
       "nearestShelter": "小杉小学校",
       "source": "川崎市 指定避難所一覧（令和7年4月1日現在）",
-      "position": { "lat": 35.580353, "lng": 139.656667, "altitude": 35 }
+      "position": {
+        "lat": 35.580353,
+        "lng": 139.656667,
+        "altitude": 35
+      },
+      "floodRisk": {
+        "scenario": "想定最大規模",
+        "depthRank": "0.5m-3.0m",
+        "depthRankCode": 2,
+        "depthMinCm": 50,
+        "depthMaxCm": 300,
+        "label": "50〜300cm",
+        "source": "国土数値情報 洪水浸水想定区域データ（河川単位）",
+        "sourceYear": "2025"
+      }
     },
     {
       "id": "imai-elementary",
@@ -127,10 +215,24 @@
       "role": "川崎市の指定避難所一覧に掲載されている今井西町の避難所。",
       "walkMemo": "駅西側から今井地区へ向かう生活圏の参照点。",
       "safetyMemo": "グランツリー武蔵小杉や駅南西側からの避難先候補として、経路と開設状況を確認する。",
-      "floodStatus": "未判定",
+      "floodStatus": "浸水想定区域内",
       "nearestShelter": "今井小学校",
       "source": "川崎市 指定避難所一覧（令和7年4月1日現在）",
-      "position": { "lat": 35.576390230555553, "lng": 139.64931954444444, "altitude": 35 }
+      "position": {
+        "lat": 35.57639023055555,
+        "lng": 139.64931954444444,
+        "altitude": 35
+      },
+      "floodRisk": {
+        "scenario": "想定最大規模",
+        "depthRank": "0.5m-3.0m",
+        "depthRankCode": 2,
+        "depthMinCm": 50,
+        "depthMaxCm": 300,
+        "label": "50〜300cm",
+        "source": "国土数値情報 洪水浸水想定区域データ（河川単位）",
+        "sourceYear": "2025"
+      }
     },
     {
       "id": "imai-junior-high",
@@ -139,10 +241,24 @@
       "role": "川崎市の指定避難所一覧に掲載されている今井仲町の避難所。",
       "walkMemo": "駅西側の住宅地・学校施設が集まるエリアを説明する地点。",
       "safetyMemo": "今井地区側の避難所として、避難経路と水害時の扱いを公的情報で確認する。",
-      "floodStatus": "未判定",
+      "floodStatus": "浸水想定区域内",
       "nearestShelter": "今井中学校",
       "source": "川崎市 指定避難所一覧（令和7年4月1日現在）",
-      "position": { "lat": 35.575569552777779, "lng": 139.6505290111111, "altitude": 35 }
+      "position": {
+        "lat": 35.57556955277778,
+        "lng": 139.6505290111111,
+        "altitude": 35
+      },
+      "floodRisk": {
+        "scenario": "想定最大規模",
+        "depthRank": "0.5m-3.0m",
+        "depthRankCode": 2,
+        "depthMinCm": 50,
+        "depthMaxCm": 300,
+        "label": "50〜300cm",
+        "source": "国土数値情報 洪水浸水想定区域データ（河川単位）",
+        "sourceYear": "2025"
+      }
     },
     {
       "id": "kamimaruko-elementary",
@@ -151,10 +267,24 @@
       "role": "川崎市の指定避難所一覧に掲載されている上丸子八幡町の避難所。",
       "walkMemo": "多摩川方面や新丸子方面を説明するときの参照点。",
       "safetyMemo": "河川近接エリアからの避難先候補として、浸水想定と開設状況を必ず確認する。",
-      "floodStatus": "要確認",
+      "floodStatus": "浸水想定区域内",
       "nearestShelter": "上丸子小学校",
       "source": "川崎市 指定避難所一覧（令和7年4月1日現在）",
-      "position": { "lat": 35.579512763888893, "lng": 139.6646966388889, "altitude": 35 }
+      "position": {
+        "lat": 35.57951276388889,
+        "lng": 139.6646966388889,
+        "altitude": 35
+      },
+      "floodRisk": {
+        "scenario": "想定最大規模",
+        "depthRank": "0.5m-3.0m",
+        "depthRankCode": 2,
+        "depthMinCm": 50,
+        "depthMaxCm": 300,
+        "label": "50〜300cm",
+        "source": "国土数値情報 洪水浸水想定区域データ（河川単位）",
+        "sourceYear": "2025"
+      }
     },
     {
       "id": "nakahara-junior-high",
@@ -163,10 +293,24 @@
       "role": "川崎市の指定避難所一覧に掲載されている小杉陣屋町の避難所。",
       "walkMemo": "小杉北側から等々力緑地方面へ向かう途中の参照点。",
       "safetyMemo": "等々力緑地方面の広域避難文脈と混同せず、指定避難所として別レイヤーで扱う。",
-      "floodStatus": "未判定",
+      "floodStatus": "浸水想定区域内",
       "nearestShelter": "中原中学校",
       "source": "川崎市 指定避難所一覧（令和7年4月1日現在）",
-      "position": { "lat": 35.585971994444442, "lng": 139.65962070833336, "altitude": 35 }
+      "position": {
+        "lat": 35.58597199444444,
+        "lng": 139.65962070833336,
+        "altitude": 35
+      },
+      "floodRisk": {
+        "scenario": "想定最大規模",
+        "depthRank": "0.5m-3.0m",
+        "depthRankCode": 2,
+        "depthMinCm": 50,
+        "depthMaxCm": 300,
+        "label": "50〜300cm",
+        "source": "国土数値情報 洪水浸水想定区域データ（河川単位）",
+        "sourceYear": "2025"
+      }
     },
     {
       "id": "nishimaruko-elementary",
@@ -175,24 +319,78 @@
       "role": "川崎市の指定避難所一覧に掲載されている小杉陣屋町の避難所。",
       "walkMemo": "小杉北側・新丸子寄りの生活圏を補足する地点。",
       "safetyMemo": "周辺の指定避難所を複数示すことで、単一施設に誘導しすぎない表示にする。",
-      "floodStatus": "未判定",
+      "floodStatus": "浸水想定区域内",
       "nearestShelter": "西丸子小学校",
       "source": "川崎市 指定避難所一覧（令和7年4月1日現在）",
-      "position": { "lat": 35.586606105555568, "lng": 139.65463773888891, "altitude": 35 }
+      "position": {
+        "lat": 35.58660610555557,
+        "lng": 139.6546377388889,
+        "altitude": 35
+      },
+      "floodRisk": {
+        "scenario": "想定最大規模",
+        "depthRank": "3.0m-5.0m",
+        "depthRankCode": 3,
+        "depthMinCm": 300,
+        "depthMaxCm": 500,
+        "label": "300〜500cm",
+        "source": "国土数値情報 洪水浸水想定区域データ（河川単位）",
+        "sourceYear": "2025"
+      }
     }
   ],
   "routePath": [
-    { "lat": 35.5761, "lng": 139.6566, "altitude": 18 },
-    { "lat": 35.5758, "lng": 139.6581, "altitude": 18 },
-    { "lat": 35.5755, "lng": 139.6597, "altitude": 18 },
-    { "lat": 35.5747, "lng": 139.6602, "altitude": 18 },
-    { "lat": 35.5735, "lng": 139.6606, "altitude": 18 }
+    {
+      "lat": 35.5761,
+      "lng": 139.6566,
+      "altitude": 18
+    },
+    {
+      "lat": 35.5758,
+      "lng": 139.6581,
+      "altitude": 18
+    },
+    {
+      "lat": 35.5755,
+      "lng": 139.6597,
+      "altitude": 18
+    },
+    {
+      "lat": 35.5747,
+      "lng": 139.6602,
+      "altitude": 18
+    },
+    {
+      "lat": 35.5735,
+      "lng": 139.6606,
+      "altitude": 18
+    }
   ],
   "floodArea": [
-    { "lat": 35.5812, "lng": 139.6508, "altitude": 8 },
-    { "lat": 35.5924, "lng": 139.6564, "altitude": 8 },
-    { "lat": 35.594, "lng": 139.6708, "altitude": 8 },
-    { "lat": 35.5855, "lng": 139.6729, "altitude": 8 },
-    { "lat": 35.579, "lng": 139.6638, "altitude": 8 }
+    {
+      "lat": 35.5812,
+      "lng": 139.6508,
+      "altitude": 8
+    },
+    {
+      "lat": 35.5924,
+      "lng": 139.6564,
+      "altitude": 8
+    },
+    {
+      "lat": 35.594,
+      "lng": 139.6708,
+      "altitude": 8
+    },
+    {
+      "lat": 35.5855,
+      "lng": 139.6729,
+      "altitude": 8
+    },
+    {
+      "lat": 35.579,
+      "lng": 139.6638,
+      "altitude": 8
+    }
   ]
 }

@@ -60,7 +60,10 @@ export default function ExplorerPanel({
         </div>
       </section>
 
-      <small>出典表示エリア: 川崎市指定避難所一覧 / 国土数値情報 / OSM / Manual seed data</small>
+      <small>
+        出典: 川崎市 指定避難所一覧（令和7年4月1日現在） / 国土数値情報
+        洪水浸水想定区域データ（河川単位） / OpenStreetMap / Manual seed data
+      </small>
     </aside>
   );
 }

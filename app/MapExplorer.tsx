@@ -4,9 +4,13 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import ExplorerPanel from "./ExplorerPanel";
 import SpotDetailModal from "./SpotDetailModal";
 import { loadGoogleMaps } from "./googleMapsLoader";
-import { cameraPresets, floodArea, routePath, shelters, walkSpots } from "./mapData";
+import { cameraPresets, routePath, shelters, walkSpots } from "./mapData";
 import type {
   CameraPreset,
+  FloodRiskFeature,
+  FloodRiskFeatureCollection,
+  GeoJsonPolygonCoordinates,
+  GeoJsonPosition,
   LayerKey,
   Map3DElementLike,
   Maps3DLibrary,
@@ -46,6 +50,15 @@ const markerStyles = {
     glyphText: "避",
     scale: 1.12,
   },
+};
+
+const floodColors: Record<number, { fill: string; stroke: string }> = {
+  1: { fill: "rgba(56, 189, 248, 0.28)", stroke: "#0284c7" },
+  2: { fill: "rgba(14, 165, 233, 0.34)", stroke: "#0369a1" },
+  3: { fill: "rgba(250, 204, 21, 0.4)", stroke: "#a16207" },
+  4: { fill: "rgba(249, 115, 22, 0.46)", stroke: "#c2410c" },
+  5: { fill: "rgba(220, 38, 38, 0.52)", stroke: "#991b1b" },
+  6: { fill: "rgba(126, 34, 206, 0.56)", stroke: "#581c87" },
 };
 
 function appendMarkerPin(marker: HTMLElement, pin: PinElementLike) {
@@ -96,10 +109,73 @@ function flyToSpot(map: Map3DElementLike | null, spot: Spot) {
     id: spot.id,
     label: spot.name,
     center: { ...spot.position, altitude: Math.max(spot.position.altitude ?? 30, 70) },
-    range: spot.id === "tamagawa" || spot.id === "todoroki" ? 1300 : 650,
+    range: spot.id === "todoroki" ? 1300 : 650,
     tilt: 68,
-    heading: spot.id === "tamagawa" ? 325 : 45,
+    heading: 45,
   });
+}
+
+function ringToPath(ring: GeoJsonPosition[]): Array<{ lat: number; lng: number; altitude: number }> {
+  return ring
+    .slice(0, -1)
+    .map(([lng, lat]) => ({ lat, lng, altitude: 8 }))
+    .filter((point) => Number.isFinite(point.lat) && Number.isFinite(point.lng));
+}
+
+function getFeaturePolygons(feature: FloodRiskFeature): GeoJsonPolygonCoordinates[] {
+  if (feature.geometry.type === "Polygon") {
+    return [feature.geometry.coordinates];
+  }
+
+  return feature.geometry.coordinates;
+}
+
+function createFloodPolygons(
+  features: FloodRiskFeature[],
+  Polygon3DElement: Maps3DLibrary["Polygon3DElement"],
+) {
+  return features.flatMap((feature) => {
+    const style = floodColors[feature.properties.depth_rank_code] ?? floodColors[2];
+
+    return getFeaturePolygons(feature)
+      .map((polygon) => polygon[0])
+      .filter(
+        (outerRing): outerRing is GeoJsonPosition[] =>
+          Array.isArray(outerRing) && outerRing.length >= 4,
+      )
+      .map((outerRing) => {
+        const path = ringToPath(outerRing);
+
+        if (path.length < 3) {
+          return null;
+        }
+
+        const flood = new Polygon3DElement({
+          path,
+          fillColor: style.fill,
+          strokeColor: style.stroke,
+          strokeWidth: 1,
+          drawsOccludedSegments: false,
+          altitudeMode: "RELATIVE_TO_GROUND",
+        });
+        flood.title = `${feature.properties.river} ${feature.properties.scenario} ${feature.properties.depth_rank}`;
+
+        return flood;
+      })
+      .filter((element): element is HTMLElement => Boolean(element));
+  });
+}
+
+async function loadFloodRiskFeatures() {
+  const response = await fetch("/data/flood_risk.geojson");
+
+  if (!response.ok) {
+    throw new Error("浸水想定GeoJSONを読み込めませんでした。");
+  }
+
+  const geojson = (await response.json()) as FloodRiskFeatureCollection;
+
+  return geojson.features;
 }
 
 function applyLayerVisibility(
@@ -250,21 +326,15 @@ export default function MapExplorer({ apiKey }: { apiKey?: string }) {
         });
         createdMap.append(route);
 
-        const flood = new Polygon3DElement({
-          path: floodArea,
-          fillColor: "rgba(14, 116, 144, 0.34)",
-          strokeColor: "#0e7490",
-          strokeWidth: 3,
-          drawsOccludedSegments: false,
-          altitudeMode: "RELATIVE_TO_GROUND",
-        });
-        createdMap.append(flood);
+        const floodFeatures = await loadFloodRiskFeatures();
+        const floodPolygons = createFloodPolygons(floodFeatures, Polygon3DElement);
+        floodPolygons.forEach((flood) => createdMap?.append(flood));
 
         const layerElements = {
           spots: spotMarkers,
           shelters: shelterMarkers,
           route: [route],
-          flood: [flood],
+          flood: floodPolygons,
         };
         elementRefs.current = layerElements;
         applyLayerVisibility(createdMap, layersRef.current, layerElements);
