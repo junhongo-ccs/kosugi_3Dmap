@@ -17,7 +17,7 @@ export const metadata: Metadata = {
     locale: "ja_JP",
     images: [
       {
-        url: "/og-image.svg",
+        url: "/og-image.png",
         width: 1200,
         height: 630,
         alt: "武蔵小杉 3D Walk + Safety Map",
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     title: "武蔵小杉 3D Walk + Safety Map",
     description:
       "Google 3D MapsとGISデータを使い、街歩きの楽しさと防災情報を同じ3D空間で確認する武蔵小杉エリアのPoCです。",
-    images: ["/og-image.svg"],
+    images: ["/og-image.png"],
   },
 };
 
